@@ -191,6 +191,16 @@ export default function DashboardPage({
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-3xl mx-auto space-y-6">
+        {/* Top nav */}
+        <div className="flex items-center justify-between">
+          <a
+            href="/create"
+            className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+          >
+            ← Create new event
+          </a>
+        </div>
+
         {/* Event header */}
         <Card>
           <CardHeader>

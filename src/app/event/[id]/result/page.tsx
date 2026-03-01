@@ -154,6 +154,16 @@ export default function ResultPage({
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-4">
+        {/* Top nav */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => window.history.back()}
+            className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+          >
+            ← Back
+          </button>
+        </div>
+
         {/* Main result */}
         <Card>
           <CardHeader className="text-center">
