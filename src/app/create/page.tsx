@@ -164,6 +164,14 @@ export default function CreateEventPage() {
             <Button className="w-full" asChild>
               <a href={formState.dashboardLink}>Go to Dashboard</a>
             </Button>
+
+            <Button
+              variant="ghost"
+              className="w-full text-gray-500"
+              onClick={() => setFormState({ step: "form" })}
+            >
+              Create another event
+            </Button>
           </CardContent>
         </Card>
       </div>

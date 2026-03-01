@@ -152,6 +152,13 @@ export default function RespondPage({
               <p className="text-xs text-gray-500">Event</p>
               <p className="font-medium">{event.title}</p>
             </div>
+            <Button
+              variant="ghost"
+              className="w-full text-gray-500 text-sm"
+              onClick={() => window.close()}
+            >
+              Close this page
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -196,12 +203,26 @@ export default function RespondPage({
   return (
     <div className="flex flex-col h-[100dvh] bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b px-4 py-3 shrink-0">
-        <p className="font-medium text-sm">{event.title}</p>
-        <p className="text-xs text-gray-400">
-          {formatDateForDisplay(event.dateRangeStart)} –{" "}
-          {formatDateForDisplay(event.dateRangeEnd)}
-        </p>
+      <div className="bg-white border-b px-4 py-3 shrink-0 flex items-center justify-between">
+        <div>
+          <p className="font-medium text-sm">{event.title}</p>
+          <p className="text-xs text-gray-400">
+            {formatDateForDisplay(event.dateRangeStart)} –{" "}
+            {formatDateForDisplay(event.dateRangeEnd)}
+          </p>
+        </div>
+        <button
+          onClick={() => {
+            if (confirm("Leave without finishing? Your responses won't be saved.")) {
+              setParticipantId(null);
+              setChatInput("");
+            }
+          }}
+          className="text-gray-400 hover:text-gray-600 text-xl leading-none p-1"
+          aria-label="Leave chat"
+        >
+          ✕
+        </button>
       </div>
 
       {/* Messages */}
