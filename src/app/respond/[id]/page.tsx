@@ -18,6 +18,33 @@ interface EventData {
   durationMinutes: number;
 }
 
+interface ToolInvocationPart {
+  type: "tool-invocation";
+  toolInvocation?: {
+    toolName?: string;
+  };
+}
+
+interface TextPart {
+  type: "text";
+  text: string;
+}
+
+function isToolInvocationPart(part: unknown): part is ToolInvocationPart {
+  return (
+    typeof part === "object" &&
+    part !== null &&
+    "type" in part &&
+    part.type === "tool-invocation"
+  );
+}
+
+function isTextPart(part: unknown): part is TextPart {
+  return (
+    typeof part === "object" && part !== null && "type" in part && part.type === "text"
+  );
+}
+
 function formatDateForDisplay(dateStr: string): string {
   const date = new Date(dateStr + "T00:00:00");
   return date.toLocaleDateString("en-US", {
@@ -60,7 +87,7 @@ export default function RespondPage({
       .finally(() => setLoading(false));
   }, [eventId]);
 
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, setMessages, status } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
       body: {
@@ -71,15 +98,23 @@ export default function RespondPage({
       // Check if the conversation has extraction tool call
       if (
         message.parts?.some(
-          (p: any) =>
-            p.type === "tool-invocation" &&
-            p.toolInvocation?.toolName === "extract_availability"
+          (part) =>
+            isToolInvocationPart(part) &&
+            part.toolInvocation?.toolName === "extract_availability"
         )
       ) {
         setChatComplete(true);
       }
     },
   });
+
+  function resetResponseFlow() {
+    setParticipantId(null);
+    setParticipantName("");
+    setChatInput("");
+    setChatComplete(false);
+    setMessages([]);
+  }
 
   const isBusy = status === "submitted" || status === "streaming";
 
@@ -152,12 +187,8 @@ export default function RespondPage({
               <p className="text-xs text-gray-500">Event</p>
               <p className="font-medium">{event.title}</p>
             </div>
-            <Button
-              variant="ghost"
-              className="w-full text-gray-500 text-sm"
-              onClick={() => window.close()}
-            >
-              Close this page
+            <Button variant="ghost" className="w-full text-gray-500 text-sm" asChild>
+              <a href="/create">Done</a>
             </Button>
           </CardContent>
         </Card>
@@ -214,8 +245,7 @@ export default function RespondPage({
         <button
           onClick={() => {
             if (confirm("Leave without finishing? Your responses won't be saved.")) {
-              setParticipantId(null);
-              setChatInput("");
+              resetResponseFlow();
             }
           }}
           className="text-gray-400 hover:text-gray-600 text-xl leading-none p-1"
@@ -230,8 +260,8 @@ export default function RespondPage({
         {messages.map((message) => {
           // Extract text content from parts
           const textContent = message.parts
-            ?.filter((p: any) => p.type === "text")
-            .map((p: any) => p.text)
+            ?.filter((part) => isTextPart(part))
+            .map((part) => part.text)
             .join("");
 
           if (!textContent) return null;
