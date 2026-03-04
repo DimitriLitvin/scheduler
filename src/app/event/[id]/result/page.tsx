@@ -157,7 +157,16 @@ export default function ResultPage({
         {/* Top nav */}
         <div className="flex items-center justify-between">
           <button
-            onClick={() => window.history.back()}
+            onClick={() => {
+              if (
+                document.referrer.startsWith(window.location.origin) &&
+                window.history.length > 1
+              ) {
+                window.history.back();
+                return;
+              }
+              window.location.href = "/create";
+            }}
             className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
           >
             ← Back
